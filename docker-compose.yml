@@ -1,0 +1,21 @@
+services:
+  certa:
+    build:
+      context: .
+      dockerfile: bots/certa/Dockerfile
+    image: arkhon/certa-bot:latest
+    container_name: certa-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      CERTA_DB_PATH: /app/data/certa.sqlite
+    volumes:
+      - certa-data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  certa-data:
