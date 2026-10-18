@@ -1,0 +1,35 @@
+// The Certa Discord bot on Cloudflare Containers. Deploy with `npm run deploy` from this folder
+// (see README.md).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "certa-bot",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-13",
+  "compatibility_flags": ["nodejs_compat"],
+  // No public URL: the bot only makes outbound connections.
+  "workers_dev": false,
+  "vars": {
+    "CERTA_API_BASE_URL": "https://arkhonindustries.com/certa/api",
+    "CERTA_TIMEZONE": "America/Denver",
+    "LITESTREAM_BUCKET": "certa-bot-data"
+  },
+  // Starts the bot after a deploy or a stop; a no-op while it runs.
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "observability": { "enabled": true },
+  "containers": [
+    {
+      "class_name": "CertaBot",
+      "image": "../../bots/certa/Dockerfile",
+      "image_build_context": "../..",
+      "instance_type": "lite",
+      "max_instances": 1,
+      "constraints": { "regions": ["ENAM"] }
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "CERTA_BOT", "class_name": "CertaBot" }]
+  },
+  "exports": {
+    "CertaBot": { "type": "durable-object", "storage": "sqlite" }
+  }
+}

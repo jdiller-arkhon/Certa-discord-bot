@@ -1,0 +1,14 @@
+# Used only when LITESTREAM_BUCKET is set (see entrypoint.sh). Values come from the environment.
+dbs:
+  - path: ${CERTA_DB_PATH}
+    replicas:
+      - type: s3
+        endpoint: ${LITESTREAM_ENDPOINT}
+        bucket: ${LITESTREAM_BUCKET}
+        path: certa-bot
+        region: auto
+        access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+        secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
+        sync-interval: 10s
+        snapshot-interval: 24h
+        retention: 168h

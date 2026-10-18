@@ -21,8 +21,10 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
       "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "better-sqlite3"
     ]
   }
 }

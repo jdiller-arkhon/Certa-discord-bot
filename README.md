@@ -70,6 +70,30 @@ docker compose logs -f certa
 
 The SQLite database lives in the `certa-data` volume at `/app/data/certa.sqlite`.
 
+### 5. Or deploy on Cloudflare Containers
+
+`deploy/cloudflare` runs the bot as an always-on Cloudflare container next to Certa
+(`arkhonindustries.com/certa`). A Cron Trigger restarts it within five minutes if it stops, and
+Litestream keeps the SQLite database in the R2 bucket `certa-bot-data`, since the container's
+disk isn't kept across restarts. Needs Workers Paid and Docker.
+
+```bash
+cd deploy/cloudflare
+npm install
+npx wrangler login
+npx wrangler deploy        # first deploy creates the Worker; the bot starts once the secrets exist
+npx wrangler secret put DISCORD_TOKEN
+npx wrangler secret put DISCORD_APPLICATION_ID
+npx wrangler secret put CERTA_API_TOKEN               # same value as Certa's DISCORD_BOT_API_TOKEN
+npx wrangler secret put LITESTREAM_ENDPOINT           # https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+npx wrangler secret put LITESTREAM_ACCESS_KEY_ID      # R2 API token, Object Read & Write on certa-bot-data
+npx wrangler secret put LITESTREAM_SECRET_ACCESS_KEY
+# Optional: DISCORD_GUILD_ID, CERTA_FLIGHT_LOGS_CHANNEL_ID, CERTA_PREFLIGHT_CHANNEL_ID,
+# CERTA_PILOT_LOUNGE_CHANNEL_ID, CERTA_PREFLIGHT_AIRPORTS
+```
+
+Logs: `npx wrangler tail`. Plain settings (Certa URL, time zone, bucket) are in `wrangler.jsonc`.
+
 ### Using the bot
 
 | Command | Description |
